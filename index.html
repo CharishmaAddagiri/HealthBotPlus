@@ -399,8 +399,7 @@
     top: 50%; left: 50%;
     transform: translate(-50%, -50%) scale(0);
   }
-
-  /* AUTH FORM */
+    /* AUTH FORM */
   .auth-form-container {
     padding: 20px;
     background: #fefefe;
@@ -507,6 +506,7 @@
           <small id="bmi-desc">BMI = Weight / (Height in meters)^2</small>
           <button id="btn-calculate-bmi" aria-describedby="bmi-feedback">Calculate BMI & Health Advice</button>
           <p id="bmi-feedback" class="bmi-result" aria-live="polite"></p>
+          <button id="btn-save-health-data">Save Health Data</button>
         </div>
       </section>
 
@@ -837,6 +837,7 @@
     const stepsAdvice = document.getElementById('steps-advice');
     const bmiFeedback = document.getElementById('bmi-feedback');
     const bmiCalcBtn = document.getElementById('btn-calculate-bmi');
+    const btnSaveHealthData = document.getElementById('btn-save-health-data');
 
     // Water tracker variables
     const addGlassBtn = document.getElementById('add-glass-btn');
@@ -913,6 +914,47 @@
         advice = 'Obese category. Consult your health provider for guidance.';
       }
       bmiFeedback.textContent = `BMI: ${bmi.toFixed(1)} — ${advice}`;
+    });
+
+    const BACKEND_API_URL = "YOUR_RENDER_BACKEND_URL";
+
+    btnSaveHealthData.addEventListener('click', async () => {
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        alert("Please sign in to save your data.");
+        return;
+      }
+
+      const steps = parseInt(stepsInput.value) || 0;
+      const weight = parseFloat(weightInput.value) || 0;
+      const heightCm = parseFloat(heightInput.value) || 0;
+      const waterIntake = currentWaterMl;
+
+      try {
+        const response = await fetch(`${BACKEND_API_URL}/api/saveHealthData`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user.uid,
+            steps,
+            weight,
+            height: heightCm,
+            waterIntake
+          }),
+        });
+
+        if (response.ok) {
+          alert("Your health data has been saved!");
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.message);
+        }
+      } catch (error) {
+        console.error('Error saving data:', error);
+        alert(`Failed to save data: ${error.message}`);
+      }
     });
 
     // SYMPTOM CHECKER

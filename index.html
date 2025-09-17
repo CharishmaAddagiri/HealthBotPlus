@@ -645,7 +645,7 @@
           alert("Signed in!");
           btnSignup.hidden = true;
           btnSignin.hidden = true;
-          btnSignout.hidden = false;
+          btnSignout.hidden = true;
         })
         .catch((error) => {
           console.error("Error signing in:", error);
@@ -917,7 +917,7 @@
       bmiFeedback.textContent = `BMI: ${bmi.toFixed(1)} — ${advice}`;
     });
 
-    const BACKEND_API_URL = "https://healthbotplus.onrender.com";
+    const BACKEND_API_URL = "YOUR_RENDER_BACKEND_URL";
 
     btnSaveHealthData.addEventListener('click', async () => {
       const user = firebase.auth().currentUser;
@@ -1082,4 +1082,3 @@
   </script>
 </body>
 </html>
-
